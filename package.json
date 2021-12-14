@@ -8,6 +8,7 @@
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
     "apollo": "^2.33.9",
+    "date-fns": "^2.27.0",
     "dotenv": "^10.0.0",
     "graphql": "^16.1.0",
     "react": "^17.0.2",

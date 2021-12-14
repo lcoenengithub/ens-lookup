@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useLazyQuery, gql } from "@apollo/client";
+import  format  from "date-fns/format";
+import { useQuery, useLazyQuery, gql } from "@apollo/client";
 
 const GET_ADDRESS = gql`
   query GetDomain($name: String) {
@@ -14,6 +15,40 @@ const GET_ADDRESS = gql`
     }
   }
 `;
+
+const GET_REGISTRATION = gql`
+	query GetRegistration($id: String) {
+	  registration(id: $id ){
+		registrant {
+		  id
+		}
+		registrationDate
+		expiryDate
+		labelName
+	  }
+	}
+`;
+
+const formatTimestamp = timestamp => format(new Date(parseInt(timestamp * 1000)), 'dd/MM/yyyy') 
+
+const RegistrationData = ({ id }) => {
+  const { data, loading, error } = useQuery(GET_REGISTRATION, { variables: { id } });
+	return <div>	
+	  {error ? (
+		<p>Error: {error?.message}</p>
+	  ) : loading ? (
+		<p data-testid="loading">Loading</p>
+	  ) : data ? (
+		  <>
+			<div>Registrant: <span data-testid="registrant">{data.registration.registrant.id}</span></div>
+			<div>Registration date: <span data-testid="registration-date">{formatTimestamp(data.registration.registrationDate)}</span></div>
+			<div>Expiration date: <span data-testid="expiry-date">{formatTimestamp(data.registration.expiryDate)}</span></div>
+		  </>
+	  ) : null
+	  }
+  </div>
+
+}
 
 const App = () => {
   const [query, setQuery] = useState("");
@@ -41,12 +76,15 @@ const App = () => {
         !data.domains.length ? (
           <p>We could not find this domain</p>
         ) : (
-          <p>
-            Resolved to
-            <span data-testid="address">
-              {data.domains[0].resolvedAddress.id}
-            </span>
-          </p>
+			<>
+			  <p>
+				Resolved to
+				<span data-testid="address">
+				  {data.domains[0].resolvedAddress.id}
+				</span>
+			  </p>
+				<RegistrationData id={data.domains[0].labelhash}/>
+			</>
         )
       ) : null}
     </div>

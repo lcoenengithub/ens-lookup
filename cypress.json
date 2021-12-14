@@ -1,5 +1,6 @@
 {
   "pluginsFile": false,
+  "supportFile": false,
   "env": {
     "PROJECT_PORT_NUMBER": "3000"
   }
