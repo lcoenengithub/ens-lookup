@@ -1,25 +1,56 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import { useLazyQuery, gql } from "@apollo/client";
 
-function App() {
+const GET_ADDRESS = gql`
+  query GetDomain($name: String) {
+    domains(where: { name: $name }) {
+      name
+      id
+      labelName
+      labelhash
+      resolvedAddress {
+        id
+      }
+    }
+  }
+`;
+
+const App = () => {
+  const [query, setQuery] = useState("");
+  const [resolveName, { data, loading, error }] = useLazyQuery(GET_ADDRESS);
+
+  const resolve = () => {
+    resolveName({ variables: { name: query } });
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <input
+        data-testid="query"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+      />
+      <button data-testid="lookup-button" onClick={resolve}>
+        Look up
+      </button>
+      {error ? (
+        <p>Error: {error?.message}</p>
+      ) : loading ? (
+        <p data-testid="loading">Loading</p>
+      ) : data ? (
+        !data.domains.length ? (
+          <p>We could not find this domain</p>
+        ) : (
+          <p>
+            Resolved to
+            <span data-testid="address">
+              {data.domains[0].resolvedAddress.id}
+            </span>
+          </p>
+        )
+      ) : null}
     </div>
   );
-}
+};
 
 export default App;
