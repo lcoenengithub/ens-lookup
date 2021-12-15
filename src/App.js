@@ -49,6 +49,18 @@ const GET_REGISTRATIONS_STREAM = gql`
   }
 `;
 
+const GET_REVERSE_REGISTRATION = gql`
+	query ReverseLookup($registrant: String) {
+	  registrations(where: { registrant: $registrant }) {
+		domain { name }
+		registrant { id }
+		expiryDate
+		registrationDate
+	  }
+	}
+`;
+
+
 const formatTimestamp = (timestamp) =>
   format(new Date(parseInt(timestamp * 1000)), "dd/MM/yyyy");
 
@@ -97,25 +109,10 @@ const RegistrationLoader = ({ id }) => {
   );
 };
 
-const LookUp = () => {
-  const [query, setQuery] = useState("");
-  const [resolveName, { data, loading, error }] = useLazyQuery(GET_ADDRESS);
-
-  const resolve = () => {
-    resolveName({ variables: { name: query } });
-  };
-
-  return (
-    <div data-testid="look-up">
-      <input
-        data-testid="query"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-      />
-      <button data-testid="lookup-button" onClick={resolve}>
-        Look up
-      </button>
-      {error ? (
+const DomainResolver = ({ query }) => {
+  const { data, loading, error } = useQuery(GET_ADDRESS, { variables: { name: query }});
+	console.log({ data, loading, error})
+  return error ? (
         <p>Error: {error?.message}</p>
       ) : loading ? (
         <p data-testid="loading">Loading</p>
@@ -127,7 +124,49 @@ const LookUp = () => {
             <RegistrationLoader id={data.domains[0].labelhash} />
           </>
         )
-      ) : null}
+      ) : null
+
+}
+
+const AddressResolver = ({ query }) => {
+  const { data, loading, error } = useQuery(GET_REVERSE_REGISTRATION, { variables: { registrant: query }});
+  return error ? (
+        <p>Error: {error?.message}</p>
+      ) : loading ? (
+        <p data-testid="loading">Loading</p>
+      ) : data ? (
+        !data.registrations.length ? (
+          <p>We could not find any registration from this address</p>
+        ) : (
+          <>
+			{data.registrations.map(registration => <Registration {...registration} />)}
+          </>
+        )
+      ) : null
+
+}
+
+
+const LookUp = () => {
+  const [query, setQuery] = useState("");
+  const [queried, setQueried] = useState("");
+
+  const lookUp = () => setQueried(query) 
+
+  const reverse = !isNaN(parseInt(queried));
+  const result = queried? reverse? <AddressResolver query={queried} /> : <DomainResolver query={queried} /> : null;
+
+  return (
+    <div data-testid="look-up">
+      <input
+        data-testid="query"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+      />
+      <button data-testid="lookup-button" onClick={lookUp}>
+        Look up
+      </button>
+	  { result }
     </div>
   );
 };

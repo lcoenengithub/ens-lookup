@@ -23,7 +23,7 @@ context("Homepage", () => {
     cy.get("[data-testid=look-up] [data-testid=expiry-date]").should('be.visible')
   });
 
-  it.only('should show history', () => {
+  it('should show history', () => {
     cy.visit(`${TARGET}/`).wait(2000);
 
     cy.get("[data-testid=registration-stream] [data-testid=domain-name]").should('be.visible')
@@ -40,7 +40,7 @@ context("Homepage", () => {
 
   })
 
-  it("should allow reverse ENS lookup", () => {
+  it.only("should allow reverse ENS lookup", () => {
     cy.visit(`${TARGET}/`).wait(2000);
     cy.get("[data-testid=query]")
       .should("be.visible")
