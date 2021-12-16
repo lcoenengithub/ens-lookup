@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
+import styled from "styled-components";
 
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 
@@ -12,10 +13,18 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
+const Layout = styled.div`
+    font-family: 'Quicksand', sans-serif;
+	max-width: 800px;
+	margin: auto;
+`;
+
 ReactDOM.render(
   <React.StrictMode>
     <ApolloProvider client={client}>
-      <App />
+		<Layout>
+		  <App />
+		</Layout>
     </ApolloProvider>
   </React.StrictMode>,
   document.getElementById("root")
