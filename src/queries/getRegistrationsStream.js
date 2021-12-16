@@ -12,6 +12,7 @@ export const GET_REGISTRATIONS_STREAM = gql`
         id
       }
 	  domain {
+			resolvedAddress { id }
 		  name
 	  }
     }

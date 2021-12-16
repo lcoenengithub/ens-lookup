@@ -9,6 +9,7 @@ export const GET_REGISTRATION = gql`
       registrationDate
       expiryDate
 	  domain {
+		  resolvedAddress { id }
 		  name
 	  }
     }

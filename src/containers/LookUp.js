@@ -41,7 +41,8 @@ export const LookUp = () => {
   const lookUp = () => setQueried(query) 
 
   const reverse = !isNaN(parseInt(queried));
-  const result = queried? reverse? <AddressResolver query={queried} /> : <DomainResolver query={queried} /> : null;
+
+  const result = queried? <DomainResolver query={queried} reverse={reverse} /> : null;
 
   return (
     <Container data-testid="look-up">
