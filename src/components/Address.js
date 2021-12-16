@@ -4,6 +4,8 @@ import FeatherIcon from 'feather-icons-react';
 import Identicon from 'react-identicons';
 import ReactTooltip from 'react-tooltip';
 
+import { LookupContext } from '../contexts/lookupContext';
+
 const AddressDiv = styled.div`
 	display: flex;
 	flex-direction: row;
@@ -36,6 +38,8 @@ const Sub = styled.div`
 
 export const Address = ({ address, domain }) => {
 	const [ copied, setCopied ] = useState(false);
+	const { lookUp: lookUpInContext } = useContext(LookupContext);
+
 	const copy = (id) => {
 		navigator.clipboard.writeText(id)	
 		setCopied(true)
@@ -43,6 +47,10 @@ export const Address = ({ address, domain }) => {
 
 	const mouseOut = () => {
 		setCopied(false)
+	}
+
+	const lookUp = (address) => {
+		lookUpInContext(address)
 	}
 
 
@@ -57,7 +65,7 @@ export const Address = ({ address, domain }) => {
 			!copied ? <Icon icon="copy" size="22"  data-tip="Copy" onClick={() => copy(address)} onMouseOut={mouseOut} /> : 
 			 <Icon icon="check" size="22"  onClick={() => copy(address)} onMouseOut={mouseOut} /> 
 		}
-		<Icon icon="search" size="22"  data-tip="Lookup"  />
+		<Icon icon="search" size="22"  data-tip="Lookup" onClick={() => lookUp(address) }  />
 	</div>
 		<ReactTooltip />
 	</AddressDiv>

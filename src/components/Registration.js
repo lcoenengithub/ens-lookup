@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import format from "date-fns/format";
 import { useQuery, useLazyQuery, gql } from "@apollo/client";
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { AddressResolver } from '../containers';
 
 const formatTimestamp = (timestamp) =>
@@ -17,10 +17,17 @@ const Line = styled.div`
 	color: grey;
 `;
 
+const FadeIn = keyframes`
+	0% { opacity: 0; }
+	100% { opacity: 1; }
+`;
+
 const RegistrationBox = styled.div`
 	border-top: 1px solid black;
 	margin: 32px;
 	width: 100%;
+	 animation-name: ${FadeIn};
+	 animation-duration: 1s;
 `;
 
 const Label = styled.div`

@@ -1,11 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import format from "date-fns/format";
 import { useQuery, useLazyQuery, gql } from "@apollo/client";
+import FeatherIcon from 'feather-icons-react';
+import styled from 'styled-components';
+
+import { LookupContext } from '../contexts/lookupContext';
 
 import { AddressResolver, DomainResolver } from '.';
-import FeatherIcon from 'feather-icons-react';
 
-import styled from 'styled-components';
 
 const Input = styled.input`
 	border: 1px solid black;
@@ -24,6 +26,10 @@ const Button = styled.button`
 	background-color: white;
 	width: 200px;
 	cursor: pointer;
+	display: flex;
+	flex-direction: rox;
+	justify-content: space-around;
+	align-items: center;
 `;
 
 const Container = styled.div`
@@ -33,19 +39,27 @@ const Container = styled.div`
 	align-items: center;
 `;
 
+const Query = styled.div`
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	margin-left: 64px;
+`;
+
 
 export const LookUp = () => {
-  const [query, setQuery] = useState("");
-  const [queried, setQueried] = useState("");
-
-  const lookUp = () => setQueried(query) 
-
-  const reverse = !isNaN(parseInt(queried));
+  
+  const { lookUp: lookUpInContext, reverse, queried, query, setQuery } = useContext(LookupContext);
 
   const result = queried? <DomainResolver query={queried} reverse={reverse} /> : null;
 
+   const lookUp = () => lookUpInContext(query)
+
   return (
     <Container data-testid="look-up">
+		<Query>
       <Input
         data-testid="query"
         value={query}
@@ -55,6 +69,7 @@ export const LookUp = () => {
 		<FeatherIcon icon="search" size="22" />
         Look up
       </Button>
+	  </Query>
 	  { result }
     </Container>
   );
